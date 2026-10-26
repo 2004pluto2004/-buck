@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Buck 驱动计算笔记 · 离线算术助手</title>
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="model.js"></script>
+  <script defer src="calculator.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+<header class="masthead"><div class="brand">BUCK LAB <span>工程计算笔记 / v1.0</span></div><span class="offline">本地运行 · 无联网计算</span></header>
+<main>
+  <section class="intro">
+    <p class="eyebrow">同步 BUCK · 串联耦合双 ZENER 网络</p>
+    <h1>把计算过程留下来。</h1>
+    <p>先从功率级需求选择器件，再用这里核对算式与缺项。12 → 3.3 V 是示例预设；可新建其他器件、其他电压范围的方案。</p>
+    <p class="muted">离线工具不搜索器件、不运行 SPICE，也不生成硬件通过结论。只有 Vin / Vout 不能完成完整驱动设计。</p>
+    <nav><a href="../../通用双Zener自举驱动_需求到选型计算流程.md">需求 → 选型 → 计算流程</a><a href="../../通用双Zener自举驱动_需求到选型计算流程.md">复制需求模板</a><a href="../../B_GaN对比/20261026_双Zener驱动参数与计算记录.md">本次初选记录</a></nav>
+  </section>
+  <section class="project-bar" aria-label="项目操作">
+    <label>方案名称<input id="project-name" maxlength="120" type="text"></label>
+    <div class="actions"><button id="new-custom">新建自定义</button><button id="reset-preset">恢复本次示例</button><button id="import-project">导入 JSON</button><button id="export-project">导出 JSON</button><button id="export-report" class="primary">导出计算报告</button></div>
+    <input type="file" id="file-input" accept=".json,application/json" hidden>
+    <p id="file-message" role="status" aria-live="polite">编辑后请导出 JSON 保存；刷新页面会恢复示例。文件仅在本机读取。</p>
+  </section>
+  <section class="topology" aria-label="拓扑边界">
+    <strong>HO</strong><span>→</span><code>R1 ∥ (D1 + R2)</code><span>→ X →</span><code>R3 ∥ C1</code><span>→</span><strong>Gate</strong><span>；</span><code>G-S：R4 ∥ 双 Zener 反向串联</code>
+    <p>D1 阳极朝 X、阴极横杠朝 HO；LO 对应 R5 / R6 / D2 / R7 / C2 / R8。Cboot 为 HB-HS 电容；D1/D2 不是自举充电二极管。</p>
+  </section>
+  <div class="workspace">
+    <div id="inputs" class="inputs" aria-label="参数输入"></div>
+    <aside class="results" aria-label="计算结果">
+      <section class="panel result-header"><p class="eyebrow">实时算术 / 始终保留验证边界</p><h2 id="overall">预算未闭合</h2><p id="counts"></p><div class="metrics" id="metrics"></div></section>
+      <section class="panel"><h2>自举预算</h2><div id="boot-result"></div></section>
+      <section class="panel"><h2>偏置与关断支路</h2><div id="bias-result"></div></section>
+      <section class="panel"><h2>电阻平均功耗</h2><div id="power-result"></div><p class="muted">R3/R7 用 C1/C2 两端 RMS；R4/R8 用完整周期 VGS。平均值合格不代表重复脉冲或温升合格。</p></section>
+      <section class="panel"><h2>问题与缺失项</h2><div id="issues" aria-live="polite"></div></section>
+    </aside>
+  </div>
+  <section class="panel"><h2>当前器件记录</h2><p class="muted">修改参数后必须复核料号。型号文本不会触发自动查表；以下始终是初选或候选。</p><div class="table-wrap"><table><thead><tr><th>位号</th><th>料号</th><th>规格</th><th>状态</th></tr></thead><tbody id="bom"></tbody></table></div></section>
+  <section class="panel"><h2>假设、公式与资料</h2><details open><summary>当前方案的适用边界</summary><ul id="notices"></ul></details><details><summary>展开全部计算公式</summary><ol id="formulae"></ol></details><details><summary>示例器件官方资料（手动点击才联网）</summary><ul id="sources"></ul></details></section>
+</main>
+<footer>参数初选记录，不是已验证硬件/仿真。修改电压、器件或时序后，请重新确认数据来源与积分区间。</footer>
+</body></html>
